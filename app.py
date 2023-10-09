@@ -24,6 +24,9 @@ terms_count = count_vectorizer.get_feature_names_out()
 df_countvect = pd.DataFrame(data = X_count.toarray(),columns = terms_count)
 df_countvect
 
+from sklearn.feature_extraction.text import TfidfVectorizer
+vectorizer = TfidfVectorizer()
+
 ##LDA Modelling
 from sklearn.decomposition import LatentDirichletAllocation, TruncatedSVD
 
