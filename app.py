@@ -9,8 +9,7 @@ st.text("load data(DataStemming.csv) csv yang sudah berhasil di stemming")
 
 ##Load data
 df = pd.read_csv('https://raw.githubusercontent.com/Zey21/dataset/main/DataSteaming.csv')
-out_df = df.head()
-st.text(out_df)
+df.head()
 
 #Ektraksi Fitur
 from sklearn.feature_extraction.text import CountVectorizer
