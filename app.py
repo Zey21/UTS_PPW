@@ -68,8 +68,10 @@ for i, doc in enumerate(df['Abstrak']):
         # print(f"Topik {j+1}: {topic_prob:.4f}")
     # print()
 
-topic_word_distributions = lda_model.components_ ;
+topic_word_distributions = lda_model.components_
+
 feature_names = vectorizer.get_feature_names_out()
+
 for topic_idx, topic in enumerate(topic_word_distributions):
     top_words_idx = topic.argsort()[::-1][:10]  # Ambil 10 kata teratas
     top_words = [feature_names[i] for i in top_words_idx]
