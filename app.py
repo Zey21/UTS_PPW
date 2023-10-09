@@ -57,10 +57,10 @@ lda_model
 doc_topic_proportions = lda_model.transform(df_countvect)
 
 for i, doc in enumerate(df['Abstrak']):
-    print(f"Dokumen {i+1}:")
+    # print(f"Dokumen {i+1}:")
     for j, topic_prob in enumerate(doc_topic_proportions[i]):
-        print(f"Topik {j+1}: {topic_prob:.4f}")
-    print()
+        # print(f"Topik {j+1}: {topic_prob:.4f}")
+    # print()
 
 topic_word_distributions = lda_model.components_
 
@@ -68,6 +68,6 @@ feature_names = vectorizer.get_feature_names_out()
 for topic_idx, topic in enumerate(topic_word_distributions):
     top_words_idx = topic.argsort()[::-1][:10]  # Ambil 10 kata teratas
     top_words = [feature_names[i] for i in top_words_idx]
-    print(f"Topik {topic_idx+1}:")
-    print(", ".join(top_words))
-    print()
+    st.text(f"Topik {topic_idx+1}:")
+    st.text(", ".join(top_words))
+    st.text("")
