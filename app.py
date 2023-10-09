@@ -11,39 +11,63 @@ st.text("load data(DataStemming.csv) csv yang sudah berhasil di stemming")
 df = pd.read_csv('https://raw.githubusercontent.com/Zey21/dataset/main/DataSteaming.csv')
 df.head()
 
-# Ekstraksi Fitur
-from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
+st.text("Ektraksi Fitur")
+df['Abstrak']
+
+from sklearn.feature_extraction.text import CountVectorizer
 count_vectorizer = CountVectorizer()
-vectorizer = TfidfVectorizer()  # Memindahkan inisialisasi ke atas
 
 # Gantilah nilai NaN dalam kolom 'Abstrak' dengan string kosong
 df['Abstrak'].fillna('', inplace=True)
 
 X_count = count_vectorizer.fit_transform(np.array(df['Abstrak']))
-terms_count = count_vectorizer.get_feature_names_out()
-df_countvect = pd.DataFrame(data=X_count.toarray(), columns=terms_count)
 
-##LDA Modelling
+terms_count = count_vectorizer.get_feature_names_out()
+df_countvect = pd.DataFrame(data = X_count.toarray(),columns = terms_count)
+df_countvect
+
+token_counts = df_countvect.sum(axis=0)
+
+non_zero_token_counts = token_counts[token_counts != 0]
+
+# print("Token Counts yang Tidak Sama dengan 0:")
+# print(non_zero_token_counts)
+
+df_binary = df_countvect.applymap(lambda x: 1 if x > 0 else 0)
+df_binary
+
+from sklearn.feature_extraction.text import TfidfVectorizer
+vectorizer = TfidfVectorizer()
+X_tfidf = vectorizer.fit_transform(df['Abstrak'].tolist())
+
+terms = vectorizer.get_feature_names_out()
+df_tfidfvect = pd.DataFrame(data = X_tfidf.toarray(),columns = terms)
+df_tfidfvect
+
+df_log = df_countvect.applymap(lambda x: np.log1p(x) if x > 0 else 0)
+df_log
+
 from sklearn.decomposition import LatentDirichletAllocation, TruncatedSVD
 
 lda_model = LatentDirichletAllocation(n_components=3, doc_topic_prior=0.1, topic_word_prior=0.2, random_state=42)
 lda_model.fit(df_countvect)
 
+lda_model
+
 doc_topic_proportions = lda_model.transform(df_countvect)
 
 for i, doc in enumerate(df['Abstrak']):
-    st.text(f"Dokumen {i+1}:")
+    print(f"Dokumen {i+1}:")
     for j, topic_prob in enumerate(doc_topic_proportions[i]):
-        st.text(f"Topik {j+1}: {topic_prob:.4f}")
-    st.text("")
+        print(f"Topik {j+1}: {topic_prob:.4f}")
+    print()
 
 topic_word_distributions = lda_model.components_
 
-# Pindahkan inisialisasi feature_names ke sini setelah lda_model.fit
 feature_names = vectorizer.get_feature_names_out()
 for topic_idx, topic in enumerate(topic_word_distributions):
     top_words_idx = topic.argsort()[::-1][:10]  # Ambil 10 kata teratas
     top_words = [feature_names[i] for i in top_words_idx]
-    st.text(f"Topik {topic_idx+1}:")
-    st.text(", ".join(top_words))
-    st.text("")
+    print(f"Topik {topic_idx+1}:")
+    print(", ".join(top_words))
+    print()
