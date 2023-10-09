@@ -68,7 +68,7 @@ for i, doc in enumerate(df['Abstrak']):
         # print(f"Topik {j+1}: {topic_prob:.4f}")
     # print()
 
-topic_word_distributions = lda_model.components_
+topic_word_distributions = lda_model.components()
 
 feature_names = vectorizer.get_feature_names_out()
 
