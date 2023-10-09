@@ -11,21 +11,17 @@ st.text("load data(DataStemming.csv) csv yang sudah berhasil di stemming")
 df = pd.read_csv('https://raw.githubusercontent.com/Zey21/dataset/main/DataSteaming.csv')
 df.head()
 
-#Ektraksi Fitur
-from sklearn.feature_extraction.text import CountVectorizer
+# Ekstraksi Fitur
+from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 count_vectorizer = CountVectorizer()
+vectorizer = TfidfVectorizer()  # Memindahkan inisialisasi ke atas
 
 # Gantilah nilai NaN dalam kolom 'Abstrak' dengan string kosong
 df['Abstrak'].fillna('', inplace=True)
 
 X_count = count_vectorizer.fit_transform(np.array(df['Abstrak']))
-
 terms_count = count_vectorizer.get_feature_names_out()
-df_countvect = pd.DataFrame(data = X_count.toarray(),columns = terms_count)
-df_countvect
-
-from sklearn.feature_extraction.text import TfidfVectorizer
-vectorizer = TfidfVectorizer()
+df_countvect = pd.DataFrame(data=X_count.toarray(), columns=terms_count)
 
 ##LDA Modelling
 from sklearn.decomposition import LatentDirichletAllocation, TruncatedSVD
@@ -43,6 +39,7 @@ for i, doc in enumerate(df['Abstrak']):
 
 topic_word_distributions = lda_model.components_
 
+# Pindahkan inisialisasi feature_names ke sini setelah lda_model.fit
 feature_names = vectorizer.get_feature_names_out()
 for topic_idx, topic in enumerate(topic_word_distributions):
     top_words_idx = topic.argsort()[::-1][:10]  # Ambil 10 kata teratas
