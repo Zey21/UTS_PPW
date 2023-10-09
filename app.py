@@ -14,6 +14,8 @@ df.head()
 st.text("Ektraksi Fitur")
 df['Abstrak']
 
+
+st.text("Term Frekuensi")
 from sklearn.feature_extraction.text import CountVectorizer
 count_vectorizer = CountVectorizer()
 
@@ -33,9 +35,11 @@ non_zero_token_counts = token_counts[token_counts != 0]
 # print("Token Counts yang Tidak Sama dengan 0:")
 # print(non_zero_token_counts)
 
+st.text("One Hot Encoding")
 df_binary = df_countvect.applymap(lambda x: 1 if x > 0 else 0)
 df_binary
 
+st.text("TF IDF")
 from sklearn.feature_extraction.text import TfidfVectorizer
 vectorizer = TfidfVectorizer()
 X_tfidf = vectorizer.fit_transform(df['Abstrak'].tolist())
@@ -44,9 +48,11 @@ terms = vectorizer.get_feature_names_out()
 df_tfidfvect = pd.DataFrame(data = X_tfidf.toarray(),columns = terms)
 df_tfidfvect
 
+st.text("Log Frekuensi")
 df_log = df_countvect.applymap(lambda x: np.log1p(x) if x > 0 else 0)
 df_log
 
+st.text("LDA Model")
 from sklearn.decomposition import LatentDirichletAllocation, TruncatedSVD
 
 lda_model = LatentDirichletAllocation(n_components=3, doc_topic_prior=0.1, topic_word_prior=0.2, random_state=42)
