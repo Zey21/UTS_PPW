@@ -49,24 +49,56 @@ df_log = df_countvect.applymap(lambda x: np.log1p(x) if x > 0 else 0)
 df_log
 
 st.text("LDA Model")
-from sklearn.decomposition import LatentDirichletAllocation, TruncatedSVD
+import gensim
+from gensim import corpora
+from gensim.models import LdaModel
+import pandas as pd
+import matplotlib.pyplot as plt
 
-lda_model = LatentDirichletAllocation(n_components=3, doc_topic_prior=0.1, topic_word_prior=0.2, random_state=42)
-lda_model.fit(df_countvect)
+# Ubah teks ke dalam format yang cocok untuk Gensim
+documents =df['abstrak_tokens']
 
-doc_topic_proportions = lda_model.transform(df_countvect)
+# Membuat kamus (dictionary) dari kata-kata unik dalam dokumen
+dictionary = corpora.Dictionary(documents)
 
-# for i, doc in enumerate(df['Abstrak']):
-#     for j, topic_prob in enumerate(doc_topic_proportions[i]):
-#         st.text(f"Dokumen {i+1}, Topik {j+1}: {topic_prob:.4f}")
+# Membuat korpus (bag-of-words) dari dokumen
+corpus = [dictionary.doc2bow(doc) for doc in documents]
 
-topic_word_distributions = lda_model.components()
+# Melatih model LDA
+lda_model = LdaModel(corpus, num_topics=5, id2word=dictionary, passes=30)
 
-feature_names = vectorizer.get_feature_names_out()
+# Membuat DataFrame untuk menampilkan proporsi topik dalam dokumen
+document_topic_df = pd.DataFrame()
 
-for topic_idx, topic in enumerate(topic_word_distributions):
-    top_words_idx = topic.argsort()[::-1][:10]  # Ambil 10 kata teratas
-    top_words = [feature_names[i] for i in top_words_idx]
-    st.text(f"Topik {topic_idx+1}:")
-    st.text(", ".join(top_words))
-    st.text("")
+for doc in corpus:
+    topic_distribution = lda_model.get_document_topics(doc, minimum_probability=0)
+    doc_topic_props = {} #mengubah tampilan agar topik di probalility hilang dan ada pada tabel diatasnya
+    for topic_id, prob in topic_distribution:
+        key = f"Topik {topic_id + 1}"
+        doc_topic_props[key] = prob
+    # doc_topic_props["Judul"] = datajudul
+    document_topic_df = pd.concat([document_topic_df, pd.Series(doc_topic_props)], ignore_index=True, axis=1)
+
+document_topic_df = document_topic_df.transpose()  # Transpose agar topik menjadi kolom
+
+column_names = [f"Topik {i + 1}" for i in range(lda_model.num_topics)]
+document_topic_df.columns = column_names
+
+# Menampilkan tabel proporsi topik dalam dokumen
+st.text("Tabel Proporsi Topik dalam Dokumen:")
+document_topic_df
+
+# Membuat DataFrame untuk menampilkan proporsi kata dalam topik
+topic_word_df = pd.DataFrame()
+
+for topic_id in range(lda_model.num_topics):
+    topic_words = lda_model.show_topic(topic_id, topn=10)  # Ambil 10 kata kunci teratas
+    # words_list = [word for word, _ in topic_words]
+    words_list = []
+    for word, bbt in topic_words:
+        words_list.append(word)
+    topic_word_df[f"Topik {topic_id + 1}"] = words_list
+
+# Menampilkan tabel proporsi kata dalam topik
+st.text("\nTabel Proporsi Kata dalam Topik:")
+topic_word_df
