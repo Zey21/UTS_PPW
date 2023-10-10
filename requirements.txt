@@ -3,3 +3,4 @@ scikit-learn
 gensim
 pandas
 numpy
+matplotlib
