@@ -1,2 +1,5 @@
 sastrawi
 scikit-learn
+gensim
+pandas
+numpy
