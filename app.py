@@ -56,9 +56,9 @@ lda_model.fit(df_countvect)
 
 doc_topic_proportions = lda_model.transform(df_countvect)
 
-for i, doc in enumerate(df['Abstrak']):
-    for j, topic_prob in enumerate(doc_topic_proportions[i]):
-        st.text(f"Dokumen {i+1}, Topik {j+1}: {topic_prob:.4f}")
+# for i, doc in enumerate(df['Abstrak']):
+#     for j, topic_prob in enumerate(doc_topic_proportions[i]):
+#         st.text(f"Dokumen {i+1}, Topik {j+1}: {topic_prob:.4f}")
 
 topic_word_distributions = lda_model.components()
 
