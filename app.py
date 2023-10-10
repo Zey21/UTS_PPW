@@ -40,6 +40,8 @@ def cleaning(text):
 #Membuat abstrak
 df['Abstrak'] = df['Abstrak'].apply(lambda x: cleaning(x))
 
+import nltk
+from nltk.tokenize import word_tokenize
 nltk.download('popular')
 
 df['abstrak_tokens'] = df['Abstrak'].apply(lambda x: word_tokenize(x))
