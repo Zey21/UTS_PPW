@@ -2,6 +2,49 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 
+##Abstrak tokens
+df = pd.read_csv('https://raw.githubusercontent.com/Zey21/dataset/main/DataPTAInformatikaLabel.csv',delimiter=';')
+df = df.loc[:, ~df.columns.str.contains('^Unnamed')]
+df.dropna(inplace=True)
+import re, string
+
+# Text Cleaning
+def cleaning(text):
+    # Menghapus tag HTML
+    text = re.compile('<.*?>|&([a-z0-9]+|#[0-9]{1,6}|#x[0-9a-f]{1,6});').sub('', str(text))
+
+    # Mengubah seluruh teks menjadi huruf kecil
+    text = text.lower()
+
+    # Menghapus spasi pada teks
+    text = text.strip()
+
+    # Menghapus Tanda Baca, karakter spesial, and spasi ganda
+    text = re.compile('<.*?>').sub('', text)
+    text = re.compile('[%s]' % re.escape(string.punctuation)).sub(' ', text)
+    text = re.sub('\s+', ' ', text)
+    text = re.sub(r'\n', ' ', text)
+    text = re.sub("â", "", text)
+
+    # Menghapus Nomor
+    text = re.sub(r'\[[0-9]*\]', ' ', text)
+    text = re.sub(r'[^\w\s]', '', str(text).lower().strip())
+    text = re.sub(r'\d', ' ', text)
+    text = re.sub(r'\s+', ' ', text)
+
+    # Mengubah text yang berisi 'nan' dengan whitespace agar nantinya dapat dihapus
+    text = re.sub('nan', '', text)
+
+    return text
+
+#Membuat abstrak
+df['Abstrak'] = df['Abstrak'].apply(lambda x: cleaning(x))
+
+nltk.download('popular')
+
+df['abstrak_tokens'] = df['Abstrak'].apply(lambda x: word_tokenize(x))
+
+
 st.header("UTS PPW")
 st.subheader("Mengambil Data CSV pada Github")
 st.write("**pada repo Zey21/dataset/**")
